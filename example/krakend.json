@@ -1,0 +1,37 @@
+{
+    "version": 2,
+    "name": "Test GW",
+    "port": 8989,
+    "cache_ttl": "3600s",
+    "timeout": "3s",
+    "endpoints": [
+        {
+            "endpoint": "users",
+            "method": "GET",
+            "output_encoding": "json",
+            "concurrent_calls": 1,
+            "headers_to_pass": [
+                "*"
+            ],
+            "querystring_params": [
+                "*"
+            ],
+            "backend": [
+                {
+                    "method": "POST",
+                    "host": [
+                        "http://localhost:8181"
+                    ],
+                    "url_pattern": "/users"
+                }
+            ]
+        }
+    ],
+    "extra_config": {
+        "github_com/stratoff/dynamic-permissions": {
+            "permission": "view.users",
+            "backend": "http://localhost:8181/has-permission",
+            "http_method": "POST"
+        }
+    }
+}
