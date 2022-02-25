@@ -19,7 +19,7 @@ func main() {
 	port := flag.Int("p", 0, "Port of the service")
 	logLevel := flag.String("l", "ERROR", "Logging level")
 	debug := flag.Bool("d", false, "Enable the debug")
-	configFile := flag.String("c", "/etc/krakend/configuration.json", "Path to the configuration filename")
+	configFile := flag.String("c", "/home/webuser/dynamic-permissions/example/krakend.json", "Path to the configuration filename")
 	flag.Parse()
 
 	parser := config.NewParser()
@@ -37,20 +37,15 @@ func main() {
 	if err != nil {
 		log.Fatal("ERROR:", err.Error())
 	}
-
 	engine := gin.Default()
-
-	// register dynamic-permissions
-	permissions.Register(&serviceConfig, logger, engine)
 
 	routerFactory := krakendgin.NewFactory(krakendgin.Config{
 		Engine:         engine,
 		ProxyFactory:   proxy.NewDefaultFactory(proxy.CustomHTTPProxyFactory(client.NewHTTPClient), logger),
 		Middlewares:    []gin.HandlerFunc{},
 		Logger:         logger,
-		HandlerFactory: krakendgin.EndpointHandler,
+		HandlerFactory: permissions.HandlerFactory(krakendgin.EndpointHandler, logger),
 		RunServer:      http.RunServer,
 	})
-
 	routerFactory.New().Run(serviceConfig)
 }

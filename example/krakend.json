@@ -1,37 +1,84 @@
 {
-    "version": 2,
-    "name": "Test GW",
-    "port": 8989,
-    "cache_ttl": "3600s",
-    "timeout": "3s",
-    "endpoints": [
-        {
-            "endpoint": "users",
-            "method": "GET",
-            "output_encoding": "json",
-            "concurrent_calls": 1,
-            "headers_to_pass": [
-                "*"
-            ],
-            "querystring_params": [
-                "*"
-            ],
-            "backend": [
-                {
-                    "method": "POST",
-                    "host": [
-                        "http://localhost:8181"
-                    ],
-                    "url_pattern": "/users"
-                }
-            ]
-        }
-    ],
-    "extra_config": {
-        "github_com/stratoff/dynamic-permissions": {
-            "permission": "view.users",
-            "backend": "http://localhost:8181/has-permission",
-            "http_method": "POST"
-        }
+  "version": 2,
+  "timeout": "300000ms",
+  "cache_ttl": "300s",
+  "output_encoding": "json",
+  "name": "Ariatel ATS",
+  "port": 20000,
+  "read_timeout": "100s",
+  "read_header_timeout": "100s",
+  "write_timeout": "100s",
+  "idle_timeout": "100s",
+  "extra_config": {
+    "github_com/devopsfaith/krakend-cors": {
+      "allow_origins": [
+        "*"
+      ],
+      "allow_methods": [
+        "GET",
+        "HEAD",
+        "POST"
+      ],
+      "expose_headers": [
+        "*"
+      ],
+      "max_age": "12h",
+      "allow_headers": [
+        "Authorization"
+      ],
+      "allow_credentials": true,
+      "debug": false
     }
+  },
+  "endpoints": [
+    {
+      "endpoint": "/user/all/",
+      "method": "GET",
+      "output_encoding": "json",
+      "concurrent_calls": 1,
+      "extra_config": {
+        "github.com/stratoff/dynamic-permissions": {
+          "permission": "active_calls.view",
+          "backend": "http://170.78.59.203:15000/api/vbeta/permissions/role/has/permissions/",
+          "http_method": "POST"
+        }
+      },
+      "backend": [
+        {
+          "url_pattern": "/api/vbeta/user/all/",
+          "encoding": "safejson",
+          "method": "GET",
+          "host": [
+            "http://170.78.59.203:14000"
+          ],
+          "disable_host_sanitize": true
+        }
+      ]
+    },
+    {
+      "endpoint": "error/user/all/",
+      "method": "GET",
+      "output_encoding": "json",
+      "concurrent_calls": 1,
+      "extra_config": {
+        "github.com/stratoff/dynamic-permissions": {
+          "permission": "active_calls.view.test.error",
+          "backend": "http://170.78.59.203:15000/api/vbeta/permissions/role/has/permissions/",
+          "http_method": "POST"
+        }
+      },
+      "backend": [
+        {
+          "url_pattern": "/api/vbeta/user/all/",
+          "encoding": "safejson",
+          "method": "GET",
+          "host": [
+            "http://170.78.59.203:14000"
+          ],
+          "disable_host_sanitize": true
+        }
+      ]
+    }
+  ]
 }
+  

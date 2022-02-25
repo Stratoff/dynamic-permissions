@@ -20,7 +20,7 @@ type PermissionConfig struct {
 
 // Manticora Function based in IP-FILTER middleware (i think)
 func ParseConfig(e config.ExtraConfig, logger logging.Logger) *PermissionConfig {
-	tmp, ok := e[NameSpace].(map[string]string)
+	tmp, ok := e[NameSpace]
 	if !ok {
 		return nil
 	}

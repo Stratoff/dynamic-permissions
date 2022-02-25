@@ -53,10 +53,10 @@ func CheckRoleWithBackend(role, permission_code, backendURL, httpMethod string) 
 	responseBody, _ := ioutil.ReadAll(response.Body)
 
 	var result ResponseBody
+
 	if err = json.Unmarshal(responseBody, &result); err != nil {
 		fmt.Println(err)
 	}
-
 	hasPermission = result.HasPermission
 	return
 }
