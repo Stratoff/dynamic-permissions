@@ -40,16 +40,19 @@ func NewHasPermission(permConfig *PermissionConfig, authorization string) bool {
 func MiddlewareHandlerFunc(hf ginlura.HandlerFactory, logger logging.Logger) ginlura.HandlerFactory {
 	return func(cfg *config.EndpointConfig, prxy proxy.Proxy) gin.HandlerFunc {
 		permConfig := ParseConfig(cfg.ExtraConfig, logger)
+		logger.Info("<<<<<<<DynamicPermissions enabled for the endpoint >>>>>>>>", cfg.Endpoint)
 		return func(c *gin.Context) {
 			auth := c.Request.Header.Get("Authorization")
 			hasPermission := NewHasPermission(permConfig, auth)
 			if hasPermission {
+				logger.Info("<<<<<<< DynamicPermissions: The user has the permission >>>>>>>>")
 				proxyReq := ginlura.NewRequest(cfg.HeadersToPass)(c, cfg.QueryString)
 				ctx, cancel := context.WithTimeout(c, cfg.Timeout)
 				defer cancel()
 				response, err := prxy(ctx, proxyReq)
 
 				if err != nil {
+					logger.Error("<<<<<<DynamicPermissions response error:", err.Error())
 					c.AbortWithStatus(http.StatusBadRequest)
 					return
 				}
