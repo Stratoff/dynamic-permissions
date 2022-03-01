@@ -17,7 +17,6 @@ func HandlerFactory(hf ginlura.HandlerFactory, logger logging.Logger) ginlura.Ha
 }
 
 func NewHasPermission(permConfig *PermissionConfig, authorization string) bool {
-
 	token := strings.TrimPrefix(authorization, "Bearer ")
 	if token == authorization {
 		return false
@@ -41,9 +40,10 @@ func MiddlewareHandlerFunc(hf ginlura.HandlerFactory, logger logging.Logger) gin
 	return func(cfg *config.EndpointConfig, prxy proxy.Proxy) gin.HandlerFunc {
 		permConfig := ParseConfig(cfg.ExtraConfig, logger)
 		if permConfig == nil {
-			return nil
+			logger.Info("<<<<<< DynamicPermissions disabled for the endpoint >>>>>>>>", cfg.Endpoint)
+			return hf(cfg, prxy)
 		}
-		logger.Info("<<<<<<<DynamicPermissions enabled for the endpoint >>>>>>>>", cfg.Endpoint)
+		logger.Info("<<<<<<< DynamicPermissions enabled for the endpoint >>>>>>>>", cfg.Endpoint)
 		return func(c *gin.Context) {
 			auth := c.Request.Header.Get("Authorization")
 			hasPermission := NewHasPermission(permConfig, auth)
@@ -52,10 +52,10 @@ func MiddlewareHandlerFunc(hf ginlura.HandlerFactory, logger logging.Logger) gin
 				proxyReq := ginlura.NewRequest(cfg.HeadersToPass)(c, cfg.QueryString)
 				ctx, cancel := context.WithTimeout(c, cfg.Timeout)
 				defer cancel()
-				response, err := prxy(ctx, proxyReq)
 
+				response, err := prxy(ctx, proxyReq)
 				if err != nil {
-					logger.Error("<<<<<<DynamicPermissions response error:", err.Error())
+					logger.Error("<<<<<< DynamicPermissions response error: ", err.Error())
 					c.AbortWithStatus(http.StatusBadRequest)
 					return
 				}

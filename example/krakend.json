@@ -39,7 +39,7 @@
       "extra_config": {
         "github.com/stratoff/dynamic-permissions": {
           "permission": "active_calls.view",
-          "backend": "http://170.78.59.203:15000/api/vbeta/permissions/role/has/permissions/",
+          "backend": "http://170.78.59.203:14000/api/vbeta/permissions/role/has/permissions/",
           "http_method": "POST"
         }
       },
@@ -63,9 +63,28 @@
       "extra_config": {
         "github.com/stratoff/dynamic-permissions": {
           "permission": "active_calls.view.test.error",
-          "backend": "http://170.78.59.203:15000/api/vbeta/permissions/role/has/permissions/",
+          "backend": "http://170.78.59.203:14000/api/vbeta/permissions/role/has/permissions/",
           "http_method": "POST"
         }
+      },
+      "backend": [
+        {
+          "url_pattern": "/api/vbeta/user/all/",
+          "encoding": "safejson",
+          "method": "GET",
+          "host": [
+            "http://170.78.59.203:14000"
+          ],
+          "disable_host_sanitize": true
+        }
+      ]
+    },
+    {
+      "endpoint": "no-register/user/all/",
+      "method": "GET",
+      "output_encoding": "json",
+      "concurrent_calls": 1,
+      "extra_config": {
       },
       "backend": [
         {
